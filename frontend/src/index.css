@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.app_link {
+  @apply text-blue-600 hover:text-blue-800 hover:underline;
+}
+
+.primary_btn {
+  @apply !bg-indigo-600 hover:!bg-indigo-500 !text-white;
+}
