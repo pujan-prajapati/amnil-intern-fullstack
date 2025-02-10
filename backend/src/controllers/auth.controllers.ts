@@ -4,6 +4,12 @@ import { ApiResponse } from "../utils/ApiResponse";
 import * as authServices from "../services/auth.services";
 import { validateId } from "../utils/validateId";
 import { sendMail } from "../utils/sendMail";
+import * as jwt from "jsonwebtoken";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../utils/generateToken";
+import { Auth } from "../entity/auth.entity";
 
 declare module "express-session" {
   interface SessionData {
@@ -124,6 +130,56 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
 //   });
 // });
 
+// refresh token
+export const resfreshToken = asyncHandler(
+  async (req: Request, res: Response) => {
+    const incomingRereshToken = req.cookies.refreshToken;
+
+    if (!incomingRereshToken) {
+      throw new Error("Unauthorized required");
+    }
+
+    try {
+      const decodedToken = jwt.verify(
+        incomingRereshToken,
+        process.env.REFRESH_TOKEN_SECRET!
+      ) as {
+        id: string;
+      };
+      const user = await Auth.findOneBy({ id: decodedToken.id });
+      if (!user) {
+        throw new Error("Invalid refresh token");
+      }
+
+      if (incomingRereshToken !== user?.refreshToken) {
+        throw new Error("Refresh token is expired or used");
+      }
+
+      const options = {
+        httpOnly: true,
+        secure: true,
+      };
+
+      const accessToken = await generateAccessToken(user.id);
+      const newRefreshToken = await generateRefreshToken(user.id);
+
+      res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", newRefreshToken, options)
+        .json(
+          new ApiResponse(
+            200,
+            { accessToken, refreshToken: newRefreshToken },
+            "Login successful"
+          )
+        );
+    } catch (error) {
+      throw new Error(error?.message || "Invalid refresh token");
+    }
+  }
+);
+
 // get all users
 export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
   const { users, totalUsers } = await authServices.getAllUsers();
@@ -137,8 +193,7 @@ export const getAllUsers = asyncHandler(async (req: Request, res: Response) => {
 
 // get user by id
 export const getUserById = asyncHandler(async (req: Request, res: Response) => {
-  const { id } = req.params;
-  validateId(id);
+  const { id } = req.user;
 
   const findUser = await authServices.getUserById(id);
 

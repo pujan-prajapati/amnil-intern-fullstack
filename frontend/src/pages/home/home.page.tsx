@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { httpGet } from "../../services/axios.service";
 
 interface User {
   username: string;
@@ -16,24 +17,27 @@ export const HomePage = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const accessToken = queryParams.get("accessToken");
-    const userString = queryParams.get("user");
 
-    if (accessToken && userString) {
+    if (accessToken) {
       localStorage.setItem("token", accessToken);
-      const decodedUser = JSON.parse(decodeURIComponent(userString));
-
-      localStorage.setItem("user", JSON.stringify(decodedUser));
-
-      setUser(decodedUser);
-
-      navigate("/");
-    } else {
-      const storedUser = localStorage.getItem("user");
-      if (storedUser) {
-        setUser(JSON.parse(storedUser));
-      }
+      navigate("/", { replace: true });
     }
   }, [location, navigate]);
+
+  useEffect(() => {
+    const fetchMe = async () => {
+      try {
+        const response = await httpGet("/auth/me", null, true);
+
+        setUser(response.data);
+      } catch (error) {
+        console.log(error);
+        navigate("/login");
+      }
+    };
+
+    fetchMe();
+  }, [user, navigate]);
 
   return (
     <section className="container my-10">

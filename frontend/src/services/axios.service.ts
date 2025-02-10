@@ -6,6 +6,7 @@ import { message } from "antd";
 export const http = axios.create({
   baseURL: `${API_URL}`,
   timeout: 30000,
+  withCredentials: true,
   timeoutErrorMessage: "Server timed out",
   headers: {
     "Content-Type": "application/json",

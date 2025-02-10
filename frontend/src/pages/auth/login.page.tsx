@@ -24,7 +24,6 @@ export const LoginPage = () => {
 
         if (response.success) {
           localStorage.setItem("token", response.data.accessToken);
-          localStorage.setItem("user", JSON.stringify(response.data.user));
           message.success(response.message);
           navigate("/");
         } else {

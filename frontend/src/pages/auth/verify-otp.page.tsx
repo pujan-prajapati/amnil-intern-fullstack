@@ -20,21 +20,23 @@ export const VefifyOTP = () => {
       otp: Number(values.otp),
     };
 
-    try {
-      setLoading(true);
-      const response = await httpPost(`/auth/verifyOTP`, data);
+    setLoading(true);
+    setTimeout(async () => {
+      try {
+        const response = await httpPost(`/auth/verifyOTP`, data);
 
-      if (response?.success) {
-        message.success(response.message);
-        navigate("/reset-password", { state: { email: email.email } });
-      } else {
-        message.error(response.message);
+        if (response?.success) {
+          message.success(response.message);
+          navigate("/reset-password", { state: { email: email.email } });
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        console.log("Failed to verify otp", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.log("Failed to verify otp", error);
-    } finally {
-      setLoading(false);
-    }
+    }, 3000);
   };
 
   return (

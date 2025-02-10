@@ -1,9 +1,8 @@
 import { Avatar, Button, message } from "antd";
 import { NavLink, useNavigate } from "react-router-dom";
-import { getLocalStore } from "../../helpers";
-import { httpPost } from "../../services/axios.service";
+import { httpGet, httpPost } from "../../services/axios.service";
 import { FaUser } from "react-icons/fa";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 interface User {
   avatar: string;
@@ -12,8 +11,22 @@ interface User {
 export const Navbar = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const user = getLocalStore("user") as User | null;
+  const [user, setUser] = useState<User | null>(null);
   const token = localStorage.getItem("token");
+
+  useEffect(() => {
+    const fetchMe = async () => {
+      try {
+        const response = await httpGet("/auth/me", null, true);
+
+        setUser(response.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchMe();
+  }, [user]);
 
   const handleLogout = () => {
     setLoading(true);
@@ -23,7 +36,6 @@ export const Navbar = () => {
 
         if (response.success) {
           localStorage.removeItem("token");
-          localStorage.removeItem("user");
           message.success(response.message);
           navigate("/login");
         } else {

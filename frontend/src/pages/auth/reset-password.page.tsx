@@ -22,21 +22,23 @@ export const ResetPassword = () => {
       confirmPassword: values.confirmPassword,
     };
 
-    try {
-      setLoading(true);
-      const response = await httpPost(`/auth/resetPassword`, data);
+    setLoading(true);
+    setTimeout(async () => {
+      try {
+        const response = await httpPost(`/auth/resetPassword`, data);
 
-      if (response.success) {
-        message.success(response.message);
-        navigate("/login");
-      } else {
-        message.error(response.message);
+        if (response.success) {
+          message.success(response.message);
+          navigate("/login");
+        } else {
+          message.error(response.message);
+        }
+      } catch (error) {
+        console.log("Failed to verify otp", error);
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.log("Failed to verify otp", error);
-    } finally {
-      setLoading(false);
-    }
+    }, 3000);
   };
 
   return (
