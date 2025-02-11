@@ -26,7 +26,7 @@ export const Navbar = () => {
     };
 
     fetchMe();
-  }, [user]);
+  }, []);
 
   const handleLogout = () => {
     setLoading(true);

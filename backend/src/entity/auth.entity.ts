@@ -6,7 +6,6 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
-import { bigint } from "zod";
 
 enum Role {
   ADMIN = "admin",

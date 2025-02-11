@@ -17,9 +17,12 @@ export const HomePage = () => {
   useEffect(() => {
     const queryParams = new URLSearchParams(location.search);
     const accessToken = queryParams.get("accessToken");
+    const refreshToken = queryParams.get("refreshToken");
 
     if (accessToken) {
       localStorage.setItem("token", accessToken);
+      document.cookie = `accessToken=${accessToken}; SameSite=Lax; Secure;`;
+      document.cookie = `refreshToken=${refreshToken}; SameSite=Lax; Secure;`;
       navigate("/", { replace: true });
     }
   }, [location, navigate]);
@@ -32,12 +35,11 @@ export const HomePage = () => {
         setUser(response.data);
       } catch (error) {
         console.log(error);
-        navigate("/login");
       }
     };
 
     fetchMe();
-  }, [user, navigate]);
+  }, []);
 
   return (
     <section className="container my-10">

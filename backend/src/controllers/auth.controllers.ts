@@ -61,7 +61,7 @@ export const loginUser = asyncHandler(async (req: Request, res: Response) => {
   );
 
   const options = {
-    secure: true,
+    secure: process.env.NODE_ENV === "production",
     httpOnly: true,
   };
 

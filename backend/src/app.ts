@@ -4,6 +4,7 @@ import * as cookieparser from "cookie-parser";
 import * as cors from "cors";
 import * as session from "express-session";
 import * as passport from "passport";
+import * as morgan from "morgan";
 import "./config/passport.config";
 
 dotenv.config();
@@ -12,6 +13,7 @@ export const app = express();
 // middlewares
 app.use(express.json());
 app.use(cookieparser());
+app.use(morgan("dev"));
 app.use(
   cors({
     origin: process.env.CORS_ORIGIN,
@@ -37,8 +39,10 @@ app.use(passport.session());
 // routes
 import { generateAccessToken } from "./utils/generateToken";
 import { authRouter } from "./routes/auth.routes";
+import { ProductRouter } from "./routes/product.routes";
 
 app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/product", ProductRouter);
 
 // google callback
 app.get(

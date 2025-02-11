@@ -75,6 +75,7 @@ export const loginUser = async (email: string, password: string) => {
     email: user.email,
     phone: user.phone,
     avatar: user.avatar,
+    role: user.role,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };
@@ -102,10 +103,21 @@ export const getAllUsers = async () => {
 
 // get user by id
 export const getUserById = async (id: string) => {
-  const user = await Auth.findOneBy({ id });
-  if (!user) {
+  const findUser = await Auth.findOneBy({ id });
+  if (!findUser) {
     throw new Error("User not found");
   }
+
+  const user = {
+    id: findUser.id,
+    username: findUser.username,
+    email: findUser.email,
+    phone: findUser.phone,
+    avatar: findUser.avatar,
+    createdAt: findUser.createdAt,
+    updatedAt: findUser.updatedAt,
+  };
+
   return user;
 };
 
