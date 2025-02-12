@@ -14,5 +14,6 @@ router
   );
 
 router.route("/").get(productControllers.getAllProducts);
+router.route("/category").get(productControllers.getAllCategoy);
 
 export { router as ProductRouter };

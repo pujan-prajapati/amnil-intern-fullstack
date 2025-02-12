@@ -9,3 +9,11 @@
 .primary_btn {
   @apply !bg-indigo-600 hover:!bg-indigo-500 !text-white;
 }
+
+.active {
+  @apply font-bold text-indigo-500;
+}
+
+.custom-selected-item {
+  @apply font-semibold underline;
+}

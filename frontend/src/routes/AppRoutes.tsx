@@ -6,8 +6,8 @@ import {
   ResetPassword,
   VefifyOTP,
 } from "../pages/auth";
-import { HomePage } from "../pages/home/home.page";
 import { HomeLayout } from "../layout/home.layout";
+import { HomePage, ProductsPage } from "../pages/home";
 
 const AppRoutes = () => {
   const token = localStorage.getItem("token") as string | null;
@@ -31,6 +31,7 @@ const AppRoutes = () => {
         {/* home routes */}
         <Route path="/" element={<HomeLayout />}>
           <Route index element={<HomePage />} />
+          <Route path="/products" element={<ProductsPage />} />
         </Route>
       </Routes>
     </>

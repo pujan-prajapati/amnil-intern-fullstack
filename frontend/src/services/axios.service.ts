@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { StatusCodes } from "http-status-codes";
 import { API_URL } from "../constants";
@@ -82,7 +83,7 @@ export const httpPut = async <T>(url: string, data: T, is_strict = false) => {
 
 export const httpGet = async (
   url: string,
-  params = null,
+  params: Record<string, any> | null = null,
   is_strict = false
 ) => {
   const headers = getHeaders(is_strict);

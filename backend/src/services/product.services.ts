@@ -91,7 +91,7 @@ export const createProduct = async (
 export const getAllProducts = async (query: getAllProductsQuery) => {
   const {
     page = 1,
-    limit = 10,
+    limit = 5,
     category,
     search,
     sortBy = "createdAt",
@@ -105,7 +105,7 @@ export const getAllProducts = async (query: getAllProductsQuery) => {
   // Search by name OR description
   if (search) {
     queryBuilder.andWhere(
-      "(product.name ILIKE :search OR product.description ILIKE :search)",
+      "(product.name ILIKE :search OR product.description ILIKE :search OR product.category ILIKE :search)",
       { search: `%${search}%` }
     );
   }
