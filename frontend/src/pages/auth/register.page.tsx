@@ -3,7 +3,7 @@ import { useState } from "react";
 import { FaUpload } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import type { UploadFile } from "antd/es/upload/interface";
-import { httpPost } from "../../services/axios.service";
+import { uploader } from "../../services/axios.service";
 
 // Define type for form values
 interface RegisterValues {
@@ -25,23 +25,21 @@ export const RegisterPage = () => {
 
   const onFinish = async (values: RegisterValues) => {
     setLoading(true);
-    const formData = new FormData();
-
-    // Append form values to FormData
-    Object.keys(values).forEach((key) => {
-      formData.append(key, values[key as keyof RegisterValues] as string);
-    });
-
-    // Append avatar if selected
-    if (fileList.length > 0) {
-      formData.append("avatar", fileList[0].originFileObj as File);
-    } else {
-      message.error("Avatar is required.");
+    if (fileList.length === 0) {
+      message.error("Avatar is required");
       return;
     }
 
     try {
-      const response = await httpPost(`/auth/registerUser`, formData);
+      const response = await uploader(
+        "/auth/registerUser",
+        "POST",
+        values,
+        "avatar",
+        fileList[0].originFileObj,
+        true
+      );
+
       if (response.success) {
         message.success("User Registered Successfully");
         navigate("/login");
@@ -49,7 +47,8 @@ export const RegisterPage = () => {
         message.error(response.message);
       }
     } catch (error) {
-      console.error("Failed to register user", error);
+      console.error("Upload failed : ", error);
+      message.error("Upload failed. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -107,7 +106,7 @@ export const RegisterPage = () => {
           name="password"
           rules={[
             { required: true, message: "Please input your password!" },
-            { min: 8, message: "Password must be at least 8 characters long" },
+            { min: 6, message: "Password must be at least 6 characters long" },
           ]}
         >
           <Input.Password placeholder="******" size="large" />

@@ -1,4 +1,4 @@
-import { Between, ILike, LessThanOrEqual, MoreThanOrEqual } from "typeorm";
+import { redisClient } from "../config/redis.config";
 import { Product } from "../entity/product.entity";
 import { uploadOnCloudinary, deleteFromCloudinary } from "../utils/cloudinary";
 
@@ -44,54 +44,10 @@ export const createProduct = async (
 };
 
 // get all products service
-// export const getAllProducts = async (query: getAllProductsQuery) => {
-//   const {
-//     page = 1,
-//     limit = 10,
-//     category,
-//     search,
-//     sortBy = "createdAt",
-//     sortOrder = "ASC",
-//     minPrice = 0,
-//     maxPrice,
-//   } = query;
-
-//   const where: any = {};
-//   if (search) {
-//     where.name = ILike(`%${search}%`);
-//     where.description = ILike(`%${search}%`);
-//   }
-//   if (category) {
-//     where.category = ILike(`%${category}%`);
-//   }
-//   if (minPrice !== undefined && maxPrice !== undefined) {
-//     where.price = Between(minPrice, maxPrice);
-//   } else if (minPrice !== undefined) {
-//     where.price = MoreThanOrEqual(minPrice);
-//   } else if (maxPrice !== undefined) {
-//     where.price = LessThanOrEqual(maxPrice);
-//   }
-
-//   const [products, totalProducts] = await Product.findAndCount({
-//     where,
-//     order: { [sortBy]: sortOrder.toUpperCase() === "DESC" ? "DESC" : "ASC" },
-//     take: limit,
-//     skip: (page - 1) * limit,
-//   });
-
-//   return {
-//     products,
-//     totalProducts,
-//     page,
-//     limit,
-//     totalPages: Math.ceil(totalProducts / limit),
-//   };
-// };
-
 export const getAllProducts = async (query: getAllProductsQuery) => {
   const {
     page = 1,
-    limit = 5,
+    limit = 10,
     category,
     search,
     sortBy = "createdAt",
@@ -100,9 +56,15 @@ export const getAllProducts = async (query: getAllProductsQuery) => {
     maxPrice,
   } = query;
 
+  const cacheKey = `products:${JSON.stringify(query)}`;
+  const cachedData = await redisClient.get(cacheKey);
+  if (cachedData) {
+    return JSON.parse(cachedData);
+  }
+
   const queryBuilder = Product.createQueryBuilder("product");
 
-  // Search by name OR description
+  // Search by name OR description OR category
   if (search) {
     queryBuilder.andWhere(
       "(product.name ILIKE :search OR product.description ILIKE :search OR product.category ILIKE :search)",
@@ -140,12 +102,14 @@ export const getAllProducts = async (query: getAllProductsQuery) => {
 
   // Execute query
   const [products, totalProducts] = await queryBuilder.getManyAndCount();
-
-  return {
+  const response = {
     products,
     totalProducts,
     page,
     limit,
     totalPages: Math.ceil(totalProducts / limit),
   };
+  await redisClient.setex(cacheKey, 600, JSON.stringify(response));
+
+  return response;
 };

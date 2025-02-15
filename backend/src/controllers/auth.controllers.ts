@@ -131,51 +131,64 @@ export const logoutUser = asyncHandler(async (req: Request, res: Response) => {
 // });
 
 // refresh token
-export const resfreshToken = asyncHandler(
-  async (req: Request, res: Response) => {
-    const incomingRereshToken = req.cookies.refreshToken;
+export const refreshToken = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    const incomingRefreshToken = req.cookies.refreshToken;
 
-    if (!incomingRereshToken) {
-      throw new Error("Unauthorized required");
+    if (!incomingRefreshToken) {
+      res.status(401).json({
+        statusCode: 401,
+        success: false,
+        message: "Unauthorized, refresh token required",
+      });
+      return;
     }
 
     try {
+      // Verify refresh token
       const decodedToken = jwt.verify(
-        incomingRereshToken,
+        incomingRefreshToken,
         process.env.REFRESH_TOKEN_SECRET!
-      ) as {
-        id: string;
-      };
+      ) as { id: string };
+
       const user = await Auth.findOneBy({ id: decodedToken.id });
-      if (!user) {
-        throw new Error("Invalid refresh token");
+      if (!user || user.refreshToken !== incomingRefreshToken) {
+        res.status(401).json({
+          statusCode: 401,
+          success: false,
+          message: "Unauthorized, refresh token required",
+        });
+        return;
       }
 
-      if (incomingRereshToken !== user?.refreshToken) {
-        throw new Error("Refresh token is expired or used");
-      }
-
-      const options = {
-        httpOnly: true,
-        secure: true,
-      };
-
-      const accessToken = await generateAccessToken(user.id);
+      // Generate new tokens
+      const newAccessToken = await generateAccessToken(user.id);
       const newRefreshToken = await generateRefreshToken(user.id);
+
+      // Update refresh token in DB
+      await Auth.update(user.id, { refreshToken: newRefreshToken });
+
+      // Set new tokens in cookies
+      const options = {
+        secure: process.env.NODE_ENV === "production",
+        httpOnly: true,
+      };
 
       res
         .status(200)
-        .cookie("accessToken", accessToken, options)
+        .cookie("accessToken", newAccessToken, options)
         .cookie("refreshToken", newRefreshToken, options)
         .json(
           new ApiResponse(
             200,
-            { accessToken, refreshToken: newRefreshToken },
-            "Login successful"
+            { accessToken: newAccessToken, refreshToken: newRefreshToken },
+            "Token refreshed"
           )
         );
-    } catch (error) {
-      throw new Error(error?.message || "Invalid refresh token");
+    } catch (error: any) {
+      res
+        .status(401)
+        .json({ message: error?.message || "Invalid refresh token" });
     }
   }
 );

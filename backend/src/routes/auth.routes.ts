@@ -15,7 +15,7 @@ router.route("/forgotPassword").post(authControllers.forgotPassword);
 router.route("/verifyOTP").post(authControllers.verifyOTP);
 router.route("/resetPassword").post(authControllers.resetPassword);
 
-router.route("/refresh").post(authControllers.resfreshToken);
+router.route("/refresh").post(authControllers.refreshToken);
 
 router.route("/:id").put(authMiddleware, authControllers.updateUserPassword);
 

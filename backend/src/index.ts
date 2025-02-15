@@ -5,6 +5,7 @@ import { v2 as cloudinary } from "cloudinary";
 dotenv.config();
 
 import { app } from "./app";
+import { redisClient } from "./config/redis.config";
 
 // port
 const PORT = 8000;
@@ -19,6 +20,13 @@ AppDataSource.initialize()
   .then(async () => {
     app.listen(PORT, () => {
       console.log(`Server running on http://localhost:${PORT}`);
+      redisClient.on("connect", () => {
+        console.log("Redis client connected");
+      });
+
+      redisClient.on("error", (error) => {
+        console.error("Redis client error:", error);
+      });
     });
     console.log("Data Source has been initialized!");
   })

@@ -51,7 +51,7 @@ export const ProductsPage = () => {
     try {
       const params = {
         page: page,
-        limit: 5,
+        limit: 7,
         search,
         sortBy,
         sortOrder,

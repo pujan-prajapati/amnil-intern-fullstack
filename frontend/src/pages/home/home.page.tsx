@@ -31,15 +31,15 @@ export const HomePage = () => {
     const fetchMe = async () => {
       try {
         const response = await httpGet("/auth/me", null, true);
-
         setUser(response.data);
       } catch (error) {
         console.log(error);
+        navigate("/login");
       }
     };
 
     fetchMe();
-  }, []);
+  }, [navigate]);
 
   return (
     <section className="container my-10">

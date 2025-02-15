@@ -6,6 +6,7 @@ import * as session from "express-session";
 import * as passport from "passport";
 import * as morgan from "morgan";
 import "./config/passport.config";
+import { setupSwagger } from "./config/swagger.config";
 
 dotenv.config();
 export const app = express();
@@ -35,6 +36,8 @@ app.use(
 
 app.use(passport.initialize());
 app.use(passport.session());
+
+setupSwagger(app);
 
 // routes
 import { generateAccessToken } from "./utils/generateToken";

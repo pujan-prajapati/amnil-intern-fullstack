@@ -18,7 +18,6 @@ export const Navbar = () => {
     const fetchMe = async () => {
       try {
         const response = await httpGet("/auth/me", null, true);
-
         setUser(response.data);
       } catch (error) {
         console.log(error);

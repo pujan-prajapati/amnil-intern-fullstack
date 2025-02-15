@@ -34,7 +34,7 @@ export const getAllProducts = asyncHanlder(
   async (req: Request, res: Response) => {
     const query = {
       page: req.query.page ? parseInt(req.query.page as string) : 1,
-      limit: req.query.limit ? parseInt(req.query.limit as string) : 5,
+      limit: req.query.limit ? parseInt(req.query.limit as string) : 10,
       category: req.query.category as string,
       search: req.query.search as string,
       sortBy: req.query.sortBy as string,
@@ -62,7 +62,7 @@ export const getAllProducts = asyncHanlder(
 );
 
 // get all products category
-export const getAllCategoy = asyncHanlder(
+export const getAllCategory = asyncHanlder(
   async (req: Request, res: Response) => {
     const categories = await Product.createQueryBuilder("product")
       .select("DISTINCT product.category", "category")
