@@ -8,6 +8,11 @@ const router = express.Router();
 /**
  * @swagger
  * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
  *   schemas:
  *     Product:
  *       type: object
@@ -86,6 +91,75 @@ const router = express.Router();
  */
 
 /**
+ * @swagger
+ * /api/v1/product:
+ *  post:
+ *    summary: Create a new product
+ *    description: Create a new product in the database
+ *    security:
+ *      - bearerAuth: []
+ *    requestBody:
+ *      required: true
+ *      content:
+ *        multipart/form-data:
+ *          schema:
+ *            type: object
+ *            properties:
+ *              name:
+ *                type: string
+ *                example: "Puma white sneaker"
+ *              description:
+ *                type: string
+ *                example: "This is a Puma white sneaker, very popular and cheap in cost"
+ *              price:
+ *                type: number
+ *                example: 2000.00
+ *              image:
+ *                type: string
+ *                format: binary
+ *              category:
+ *                type: string
+ *                example: "shoes"
+ *              quantity:
+ *                type: integer
+ *                example: 23
+ *    responses:
+ *      201:
+ *        description: Product created successfully
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                statusCode:
+ *                  type: integer
+ *                  example: 201
+ *                message:
+ *                  type: string
+ *                  example: "Product created successfully"
+ *                success:
+ *                  type: boolean
+ *                  example: true
+ *                data:
+ *                  $ref: "#/components/schemas/Product"
+ *      400:
+ *        description: Bad request
+ *      401:
+ *        description: Unauthorized (Admin only)
+ *      500:
+ *        description: Internal server error
+ *
+ */
+router
+  .route("/")
+  .post(
+    authMiddleware,
+    isAdmin,
+    upload.single("image"),
+    productControllers.createProduct
+  );
+
+/**
  *  @swagger
  *  /api/v1/product:
  *    get:
@@ -99,17 +173,40 @@ const router = express.Router();
  *              schema:
  *                $ref: '#/components/schemas/ProductResponse'
  */
-
-router
-  .route("/")
-  .post(
-    authMiddleware,
-    isAdmin,
-    upload.single("image"),
-    productControllers.createProduct
-  );
-
 router.route("/").get(productControllers.getAllProducts);
+
+/**
+ * @swagger
+ * /api/v1/product/{id}:
+ *  get:
+ *    summary: Get a product by ID
+ *    description: Retrieve a product from the database by its ID
+ *    parameters:
+ *      - in: path
+ *        name: id
+ *        required: true
+ *        description: ID of the product is required
+ *        schema:
+ *          type: string
+ *    responses:
+ *      200:
+ *        description: A product
+ *        content:
+ *          application/json:
+ *            schema:
+ *              type: object
+ *              properties:
+ *                statusCode:
+ *                  type: integer
+ *                  example: 200
+ *                message:
+ *                  type: string
+ *                success:
+ *                  type: boolean
+ *                data:
+ *                  $ref: "#/components/schemas/Product"
+ */
+router.route("/:id").get(productControllers.getProduct);
 router.route("/category").get(productControllers.getAllCategory);
 
 export { router as ProductRouter };

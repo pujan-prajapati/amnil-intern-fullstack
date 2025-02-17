@@ -75,3 +75,12 @@ export const getAllCategory = asyncHanlder(
       );
   }
 );
+
+// get product by id
+export const getProduct = asyncHanlder(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const product = await productServices.getProductById(id);
+  res
+    .status(200)
+    .json(new ApiResponse(200, product, "Product fetched successfully"));
+});

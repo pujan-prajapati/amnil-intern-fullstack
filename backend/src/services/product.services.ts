@@ -113,3 +113,12 @@ export const getAllProducts = async (query: getAllProductsQuery) => {
 
   return response;
 };
+
+// get product by id service
+export const getProductById = async (id: string) => {
+  const product = await Product.findOneBy({ id });
+  if (!product) {
+    throw new Error("Product not found");
+  }
+  return product;
+};
