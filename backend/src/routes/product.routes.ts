@@ -207,6 +207,7 @@ router.route("/").get(productControllers.getAllProducts);
  *                  $ref: "#/components/schemas/Product"
  */
 router.route("/:id").get(productControllers.getProduct);
+
 router.route("/category").get(productControllers.getAllCategory);
 
 export { router as ProductRouter };

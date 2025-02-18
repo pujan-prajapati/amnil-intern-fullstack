@@ -128,6 +128,18 @@ router
  */
 router.route("/loginUser").post(authControllers.loginUser);
 
+/**
+ * @swagger
+ *  /api/v1/auth/logoutUser:
+ *    post:
+ *      summary: Logout a user
+ *      description: Logout a user from the database
+ *      security:
+ *        - bearerAuth: []
+ *      responses:
+ *        200:
+ *          description: User logged out successfully
+ */
 router.route("/logoutUser").post(authMiddleware, authControllers.logoutUser);
 router.route("/forgotPassword").post(authControllers.forgotPassword);
 router.route("/verifyOTP").post(authControllers.verifyOTP);
