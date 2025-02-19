@@ -6,7 +6,7 @@ interface PrivateRouteProps {
 }
 
 export const PrivateRoute = ({ component }: PrivateRouteProps) => {
-  const token = getLocalStore("accessToken") ?? "";
+  const token = getLocalStore("token") ?? "";
   const is_logged_in = token ? true : false;
 
   return is_logged_in ? component : <Navigate to={"/login"} />;
@@ -17,15 +17,13 @@ interface AdminPrivateRouteProps {
 }
 
 export const AdminPrivateRoute = ({ component }: AdminPrivateRouteProps) => {
-  const token = getLocalStore("accessToken") as string | null;
-  const user = getLocalStore("user") as { role?: string } | null;
+  const token = getLocalStore("token") as string | null;
+  const role = getLocalStore("role") as string | null;
 
   const is_logged_in = token ? true : false;
-  let role = null;
-
-  if (user && user["role"]) {
-    role = user["role"].toLowerCase();
+  if (is_logged_in && role === "admin") {
+    return component;
   }
 
-  return is_logged_in && role === "admin" ? component : <Navigate to={"/"} />;
+  return <Navigate to={"/"} />;
 };

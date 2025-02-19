@@ -122,3 +122,24 @@ export const getProductById = async (id: string) => {
   }
   return product;
 };
+
+// delete product service
+export const deleteProduct = async (id: string) => {
+  const product = await Product.findOneBy({ id });
+  if (!product) {
+    throw new Error("Product not found");
+  }
+
+  if (product.image) {
+    await deleteFromCloudinary(product.image);
+  }
+
+  await Product.delete({ id });
+  const cacheKeyPattern = `products:*`;
+  const keys = await redisClient.keys(cacheKeyPattern);
+  if (keys.length > 0) {
+    await redisClient.del(keys);
+  }
+
+  return product;
+};

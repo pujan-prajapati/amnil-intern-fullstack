@@ -1,18 +1,19 @@
 import { Avatar, Button, message } from "antd";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { httpGet, httpPost } from "../../services/axios.service";
 import { FaUser } from "react-icons/fa";
 import { useEffect, useState } from "react";
+import { getLocalStore } from "../../helpers";
 
 interface User {
   avatar: string;
 }
 
 export const Navbar = () => {
-  const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const token = localStorage.getItem("token");
+  const token = getLocalStore("token") as string | null;
+  const role = getLocalStore("role") as string | null;
 
   useEffect(() => {
     const fetchMe = async () => {
@@ -35,8 +36,8 @@ export const Navbar = () => {
 
         if (response.success) {
           localStorage.removeItem("token");
-          message.success(response.message);
-          navigate("/login");
+          localStorage.removeItem("role");
+          window.location.href = "/login";
         } else {
           message.error(response.message);
         }
@@ -58,6 +59,9 @@ export const Navbar = () => {
             <NavLink to="/">Home</NavLink>
             <NavLink to="/products">Products</NavLink>
             <NavLink to="/contact">Contact</NavLink>
+            {token && role === "admin" && (
+              <NavLink to="/admin">Dashboard</NavLink>
+            )}
           </div>
 
           <div className="flex items-center gap-4 ">

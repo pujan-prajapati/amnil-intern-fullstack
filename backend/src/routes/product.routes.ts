@@ -159,6 +159,8 @@ router
     productControllers.createProduct
   );
 
+router.route("/:id").delete(productControllers.deleteProduct);
+
 /**
  *  @swagger
  *  /api/v1/product:
@@ -174,6 +176,8 @@ router
  *                $ref: '#/components/schemas/ProductResponse'
  */
 router.route("/").get(productControllers.getAllProducts);
+
+router.route("/category").get(productControllers.getAllCategory);
 
 /**
  * @swagger
@@ -207,7 +211,5 @@ router.route("/").get(productControllers.getAllProducts);
  *                  $ref: "#/components/schemas/Product"
  */
 router.route("/:id").get(productControllers.getProduct);
-
-router.route("/category").get(productControllers.getAllCategory);
 
 export { router as ProductRouter };

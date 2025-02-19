@@ -4,6 +4,7 @@ import { httpPost } from "../../services/axios.service";
 import { FaGoogle } from "react-icons/fa";
 import { API_URL } from "../../constants";
 import { useState } from "react";
+import { setLocalStore } from "../../helpers";
 
 interface LoginFormValuels {
   email: string;
@@ -21,11 +22,17 @@ export const LoginPage = () => {
     setTimeout(async () => {
       try {
         const response = await httpPost(`/auth/loginUser`, values);
+        console.log(response);
 
         if (response.success) {
-          localStorage.setItem("token", response.data.accessToken);
+          setLocalStore("token", response.data.accessToken);
+          setLocalStore("role", response.data.user.role);
           message.success(response.message);
-          navigate("/");
+          if (response.data.user.role === "admin") {
+            navigate("/admin");
+          } else {
+            navigate("/");
+          }
         } else {
           message.error(response.message);
         }

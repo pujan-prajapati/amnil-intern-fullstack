@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { httpGet } from "../../services/axios.service";
+import { setLocalStore } from "../../helpers";
 
 interface User {
   username: string;
@@ -20,7 +21,7 @@ export const HomePage = () => {
     const refreshToken = queryParams.get("refreshToken");
 
     if (accessToken) {
-      localStorage.setItem("token", accessToken);
+      setLocalStore("token", accessToken);
       document.cookie = `accessToken=${accessToken}; SameSite=Lax; Secure;`;
       document.cookie = `refreshToken=${refreshToken}; SameSite=Lax; Secure;`;
       navigate("/", { replace: true });

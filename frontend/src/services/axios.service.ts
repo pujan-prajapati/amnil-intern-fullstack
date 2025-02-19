@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from "axios";
 import { API_URL } from "../constants";
+import { getLocalStore } from "../helpers";
 
 export const http = axios.create({
   baseURL: `${API_URL}`,
@@ -18,7 +19,7 @@ const getHeaders = (strict: boolean): Record<string, string> => {
   };
 
   if (strict) {
-    const token = localStorage.getItem("token");
+    const token = getLocalStore("token");
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
@@ -114,9 +115,7 @@ export const uploader = (
     // ✅ Handle Authentication Token Properly
     if (isStrict) {
       try {
-        const token = JSON.parse(
-          localStorage.getItem("stack_7_token") || "null"
-        );
+        const token = JSON.parse(localStorage.getItem("token") || "null");
         if (token) {
           xmlhttp.setRequestHeader("Authorization", token);
         }
