@@ -1,0 +1,6 @@
+.product-image .ant-upload-select {
+  @apply !w-52 !h-52;
+}
+.product-image .ant-upload-list-item-container {
+  @apply !w-52 !h-52;
+}

@@ -3,7 +3,6 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -19,24 +18,22 @@ export class Product extends BaseEntity {
   name: string;
 
   @Column({
-    type: "text",
     nullable: false,
   })
   description: string;
 
   @Column({
-    type: "decimal",
-    precision: 10,
-    scale: 2,
+    type: "int",
     nullable: false,
   })
   price: number;
 
   @Column({
     type: "text",
+    array: true,
     nullable: false,
   })
-  image: string;
+  images: string[];
 
   @Column({
     nullable: false,
@@ -44,6 +41,7 @@ export class Product extends BaseEntity {
   category: string;
 
   @Column({
+    type: "int",
     nullable: false,
   })
   quantity: number;

@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { HomeWrapper } from "../../../components/home/HomeWrapper";
 import { httpGet } from "../../../services/axios.service";
-import { Button, Dropdown, Input, MenuProps, Pagination, Spin } from "antd";
+import { Button, Dropdown, Input, MenuProps, Pagination } from "antd";
 import { FaSearch } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 interface ProductProps {
   id: string;
   name: string;
-  image: string;
+  images: string;
   price: number;
   category: string;
   quantity: number;
@@ -19,7 +20,6 @@ interface ProductProps {
 export const ProductsPage = () => {
   const [products, setProducts] = useState<ProductProps[]>([]);
   const [categories, setCategories] = useState<{ category: string }[]>([]);
-  const [loading, setLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
   const [search, setSearch] = useState("");
@@ -29,14 +29,11 @@ export const ProductsPage = () => {
   const [category, setCategory] = useState<string>("");
 
   const fetchCategoris = async () => {
-    setLoading(true);
     try {
       const response = await httpGet("/product/category");
       setCategories(response.data);
     } catch (error) {
       console.log("Failed to fetch categories : ", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -47,11 +44,9 @@ export const ProductsPage = () => {
     sortOrder: string,
     category: string
   ) => {
-    setLoading(true);
     try {
       const params = {
         page: page,
-        limit: 10,
         search,
         sortBy,
         sortOrder,
@@ -65,8 +60,6 @@ export const ProductsPage = () => {
       setTotalProducts(totalProducts);
     } catch (error) {
       console.log("Failed to fetch products : ", error);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -231,6 +224,7 @@ export const ProductsPage = () => {
   return (
     <>
       <HomeWrapper>
+        {/* filters */}
         <section className="flex justify-between items-center">
           <div className="flex items-center">
             <Input
@@ -281,16 +275,15 @@ export const ProductsPage = () => {
           </div>
         </section>
 
+        {/* products */}
         <section className="my-10 grid grid-cols-4 gap-4 ">
-          {loading ? (
-            <Spin />
-          ) : (
-            products.map((item: ProductProps) => (
-              <div key={item.id} className="bg-gray-50 p-2 rounded-lg">
+          {products.map((item: ProductProps) => (
+            <Link to={`/products/${item.id}`} key={item.id}>
+              <div className="bg-gray-50 p-2 rounded-lg">
                 <img
-                  src={item.image}
+                  src={item.images[1]}
                   alt={item.name}
-                  className="w-full h-52 object-contain"
+                  className="w-full h-52 object-contain bg-white"
                 />
 
                 <div className="space-y-1 p-2">
@@ -318,8 +311,8 @@ export const ProductsPage = () => {
                   </p>
                 </div>
               </div>
-            ))
-          )}
+            </Link>
+          ))}
         </section>
         <Pagination
           className="mt-10"

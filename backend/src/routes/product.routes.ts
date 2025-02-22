@@ -155,7 +155,7 @@ router
   .post(
     authMiddleware,
     isAdmin,
-    upload.single("image"),
+    upload.array("images", 4),
     productControllers.createProduct
   );
 

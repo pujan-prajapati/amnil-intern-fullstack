@@ -22,7 +22,6 @@ export const LoginPage = () => {
     setTimeout(async () => {
       try {
         const response = await httpPost(`/auth/loginUser`, values);
-        console.log(response);
 
         if (response.success) {
           setLocalStore("token", response.data.accessToken);

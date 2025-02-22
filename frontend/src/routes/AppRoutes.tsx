@@ -6,7 +6,7 @@ import {
   ResetPassword,
   VefifyOTP,
 } from "../pages/auth";
-import { HomePage, ProductsPage } from "../pages/home";
+import { CartPage, HomePage, ProductInfo, ProductsPage } from "../pages/home";
 import { AdminLayout, HomeLayout } from "../layout";
 import { AdminPrivateRoute } from "./PrivateRoutes";
 import { CreateProduct, Dashboard, ViewProducts } from "../pages/admin";
@@ -34,7 +34,11 @@ const AppRoutes = () => {
         {/* home routes */}
         <Route path="/" element={<HomeLayout />}>
           <Route index element={<HomePage />} />
+
           <Route path="products" element={<ProductsPage />} />
+          <Route path="products/:id" element={<ProductInfo />} />
+
+          <Route path="cart" element={<CartPage />} />
         </Route>
 
         {/* admin routes */}

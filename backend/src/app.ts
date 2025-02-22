@@ -43,9 +43,11 @@ setupSwagger(app);
 import { generateAccessToken } from "./utils/generateToken";
 import { authRouter } from "./routes/auth.routes";
 import { ProductRouter } from "./routes/product.routes";
+import { cartRouter } from "./routes/cart.routes";
 
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/product", ProductRouter);
+app.use("/api/v1/cart", cartRouter);
 
 // google callback
 app.get(

@@ -17,25 +17,3 @@
 .custom-selected-item {
   @apply font-semibold underline;
 }
-
-.ant-menu-item-selected {
-  background-color: #4c6ef5 !important;
-  color: #fff !important;
-}
-
-.ant-menu-submenu-title:hover {
-  background-color: #ceddfc !important;
-}
-
-.ant-menu-item-only-child:hover {
-  background-color: #ceddfc !important;
-}
-
-.ant-menu-item-active {
-  background-color: #ceddfc !important;
-}
-
-.ant-menu-item-selected:hover {
-  background-color: #4c6ef5 !important;
-  color: #fff !important;
-}

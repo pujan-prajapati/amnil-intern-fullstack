@@ -18,27 +18,38 @@ export const createProduct = async (
   name: string,
   description: string,
   price: number,
-  imageLocalPath: string,
+  imageLocalPaths: string[],
   category: string,
   quantity: number
 ) => {
-  const imageUrl = await uploadOnCloudinary(
-    imageLocalPath,
-    "amnil_intern_product"
+  const imageUrls = await Promise.all(
+    imageLocalPaths.map(async (path) => {
+      const uploadedImage = await uploadOnCloudinary(
+        path,
+        "amnil_intern_product"
+      );
+      if (!uploadedImage) {
+        throw new Error("Error while uploading an image");
+      }
+      return uploadedImage.url;
+    })
   );
-  if (!imageUrl) {
-    throw new Error("Error while uploading image");
-  }
 
   const product = Product.create({
     name,
     description,
     price,
-    image: imageUrl.url,
+    images: imageUrls,
     category,
     quantity,
   });
   await product.save();
+
+  const chacheKeyPattern = `products:*`;
+  const keys = await redisClient.keys(chacheKeyPattern);
+  for (const key of keys) {
+    await redisClient.del(key);
+  }
 
   return product;
 };
@@ -116,10 +127,18 @@ export const getAllProducts = async (query: getAllProductsQuery) => {
 
 // get product by id service
 export const getProductById = async (id: string) => {
+  const cacheKey = `product:${id}`;
+  const cachedData = await redisClient.get(cacheKey);
+  if (cachedData) {
+    return JSON.parse(cachedData);
+  }
+
   const product = await Product.findOneBy({ id });
   if (!product) {
     throw new Error("Product not found");
   }
+
+  await redisClient.setex(cacheKey, 600, JSON.stringify(product));
   return product;
 };
 
@@ -130,15 +149,17 @@ export const deleteProduct = async (id: string) => {
     throw new Error("Product not found");
   }
 
-  if (product.image) {
-    await deleteFromCloudinary(product.image);
+  if (product.images && Array.isArray(product.images)) {
+    await Promise.all(
+      product.images.map(async (image) => await deleteFromCloudinary(image))
+    );
   }
 
   await Product.delete({ id });
   const cacheKeyPattern = `products:*`;
   const keys = await redisClient.keys(cacheKeyPattern);
-  if (keys.length > 0) {
-    await redisClient.del(keys);
+  for (const key of keys) {
+    await redisClient.del(key);
   }
 
   return product;

@@ -1,7 +1,7 @@
-import { Avatar, Button, message } from "antd";
-import { NavLink } from "react-router-dom";
+import { Avatar, Badge, Button, message } from "antd";
+import { Link, NavLink } from "react-router-dom";
 import { httpGet, httpPost } from "../../services/axios.service";
-import { FaUser } from "react-icons/fa";
+import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import { getLocalStore } from "../../helpers";
 
@@ -64,9 +64,20 @@ export const Navbar = () => {
             )}
           </div>
 
-          <div className="flex items-center gap-4 ">
+          <div className="flex items-center gap-5">
             {token ? (
-              <div className="flex items-center gap-5">
+              <>
+                <Link to="/cart">
+                  <Badge
+                    count={1}
+                    size="small"
+                    className="mt-2"
+                    style={{ backgroundColor: "#52c41a" }}
+                  >
+                    <FaShoppingCart className="w-5 h-5" />
+                  </Badge>
+                </Link>
+
                 <Avatar
                   size={"large"}
                   src={user?.avatar || ""}
@@ -81,7 +92,7 @@ export const Navbar = () => {
                 >
                   Logout
                 </Button>
-              </div>
+              </>
             ) : (
               <>
                 <NavLink to="/login">

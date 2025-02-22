@@ -4,28 +4,39 @@ import { ApiResponse } from "../utils/ApiResponse";
 import * as productServices from "../services/product.services";
 import { Product } from "../entity/product.entity";
 
-// create product
 export const createProduct = asyncHandler(
   async (req: Request, res: Response) => {
     const { name, description, price, category, quantity } = req.body;
 
-    const imageLocalPath = req.file.path;
-    if (!imageLocalPath) {
-      throw new Error("Image file is missing");
+    const numericPrice = parseInt(price);
+    const numberQuantity = parseInt(quantity);
+
+    if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
+      throw new Error("Image files are missing");
     }
+
+    const imageLocalPaths = (req.files as Express.Multer.File[]).map(
+      (file) => file.path
+    );
 
     const product = await productServices.createProduct(
       name,
       description,
-      price,
-      imageLocalPath,
+      numericPrice,
+      imageLocalPaths,
       category,
-      quantity
+      numberQuantity
     );
 
     res
       .status(201)
-      .json(new ApiResponse(201, product, "Product created successfully"));
+      .json(
+        new ApiResponse(
+          201,
+          new ApiResponse(201, product, "Product created successfully"),
+          "Product created successfully"
+        )
+      );
   }
 );
 
@@ -60,15 +71,19 @@ export const getAllProducts = asyncHandler(
 
     const { products, totalProducts, limit, page, totalPages } =
       await productServices.getAllProducts(query);
-    res
-      .status(200)
-      .json(
-        new ApiResponse(
-          200,
-          { products, totalProducts, limit, page, totalPages },
-          "Products fetched successfully"
-        )
-      );
+    res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          products,
+          totalProducts,
+          limit,
+          page,
+          totalPages,
+        },
+        "Products fetched successfully"
+      )
+    );
   }
 );
 

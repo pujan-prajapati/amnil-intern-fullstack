@@ -117,7 +117,7 @@ export const uploader = (
       try {
         const token = JSON.parse(localStorage.getItem("token") || "null");
         if (token) {
-          xmlhttp.setRequestHeader("Authorization", token);
+          xmlhttp.setRequestHeader("Authorization", `Bearer ${token}`);
         }
       } catch (error) {
         console.error("Invalid token format:", error);

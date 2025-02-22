@@ -1,0 +1,6 @@
+.register-avatar .ant-upload-select {
+  @apply !w-40 !h-40;
+}
+.register-avatar .ant-upload-list-item-container {
+  @apply !w-40 !h-40;
+}

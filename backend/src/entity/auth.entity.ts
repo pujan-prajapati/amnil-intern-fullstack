@@ -5,7 +5,9 @@ import {
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
+import { Cart } from "./cart.entity";
 
 enum Role {
   ADMIN = "admin",
@@ -53,6 +55,9 @@ export class Auth extends BaseEntity {
     nullable: false,
   })
   avatar: string;
+
+  @OneToMany(() => Cart, (cart) => cart.user, { cascade: true })
+  carts: Cart[];
 
   @Column({
     nullable: true,

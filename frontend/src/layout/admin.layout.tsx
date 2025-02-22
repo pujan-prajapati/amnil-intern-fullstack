@@ -7,11 +7,11 @@ import {
   FaChevronCircleRight,
   FaHamburger,
 } from "react-icons/fa";
+import "./layout.css";
 
 const { Header, Sider, Content } = Layout;
 
 const menuItems = [
-  // dashboard
   {
     key: "dashboard",
     icon: <FaHamburger />,
@@ -21,7 +21,6 @@ const menuItems = [
       </NavLink>
     ),
   },
-  // product
   {
     key: "products",
     icon: <FaCamera />,
@@ -57,9 +56,8 @@ const menuItems = [
 
 export const AdminLayout = () => {
   const [collapsed, setCollapsed] = useState(false);
-  const location = useLocation(); // Use the location to dynamically update selected keys
+  const location = useLocation();
 
-  // Determine the selected key based on the current path
   const getSelectedKey = () => {
     if (location.pathname === "/admin/create-product") {
       return ["products", "create-product"];
@@ -68,7 +66,7 @@ export const AdminLayout = () => {
     } else if (location.pathname === "/admin") {
       return ["dashboard"];
     } else {
-      return []; // Default case (if no match)
+      return [];
     }
   };
 
@@ -81,18 +79,18 @@ export const AdminLayout = () => {
           collapsible
           collapsed={collapsed}
           width={300}
-          className="bg-gray-100 shadow-sm"
+          className="bg-white"
           style={{ overflow: "hidden" }}
         >
-          <h1 className="px-5 py-4 text-4xl font-bold text-indigo-600">
+          <h1 className="px-5 py-3  text-4xl font-bold text-indigo-600">
             {collapsed ? "Lo." : "Logo"}
           </h1>
 
           {/* Sidebar Menu */}
           <Menu
-            className="bg-gray-100"
+            className="admin-sidebar-menu"
             mode="inline"
-            selectedKeys={getSelectedKey()} // Dynamically update selected keys based on the current path
+            selectedKeys={getSelectedKey()}
             items={menuItems}
             style={{ height: "100%", fontSize: "15px" }}
           />
@@ -100,13 +98,7 @@ export const AdminLayout = () => {
 
         {/* right side */}
         <Layout className="min-h-screen">
-          <Header
-            style={{
-              padding: 0,
-              background: "#fff",
-              boxShadow: "0px 1px 2px #ccc",
-            }}
-          >
+          <Header className="px-0  bg-white border">
             <Button
               type="text"
               icon={
@@ -127,7 +119,7 @@ export const AdminLayout = () => {
             </Link>
           </Header>
 
-          <Content className="p-10 ">
+          <Content className="p-10 bg-gray-50">
             <Outlet />
           </Content>
         </Layout>

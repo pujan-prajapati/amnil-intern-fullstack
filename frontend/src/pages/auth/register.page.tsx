@@ -1,9 +1,9 @@
 import { Button, Form, Input, message, Upload } from "antd";
 import { useState } from "react";
-import { FaUpload } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import type { UploadFile } from "antd/es/upload/interface";
 import { uploader } from "../../services/axios.service";
+import "./auth.css";
 
 // Define type for form values
 interface RegisterValues {
@@ -36,8 +36,7 @@ export const RegisterPage = () => {
         "POST",
         values,
         "avatar",
-        fileList[0].originFileObj,
-        true
+        fileList[0].originFileObj
       );
 
       if (response.success) {
@@ -66,16 +65,18 @@ export const RegisterPage = () => {
         </h1>
 
         {/* Avatar */}
-        <Form.Item label="Avatar" name="avatar">
+        <Form.Item
+          name="avatar"
+          className="register-avatar flex justify-center"
+        >
           <Upload
-            listType="picture"
+            listType="picture-circle"
             beforeUpload={() => false}
             fileList={fileList}
             onChange={handleAvatarChange}
             maxCount={1}
-            type="drag"
           >
-            <Button icon={<FaUpload />}>Select Avatar</Button>
+            {fileList.length < 1 && "+ Upload"}
           </Upload>
         </Form.Item>
 
