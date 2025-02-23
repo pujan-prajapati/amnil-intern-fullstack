@@ -61,6 +61,9 @@ export class Product extends BaseEntity {
   })
   likes: number;
 
+  @Column({ nullable: true, type: "text", array: true })
+  tags: string[];
+
   @CreateDateColumn()
   createdAt: Date;
 

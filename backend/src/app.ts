@@ -45,9 +45,11 @@ import { authRouter } from "./routes/auth.routes";
 import { ProductRouter } from "./routes/product.routes";
 import { cartRouter } from "./routes/cart.routes";
 
+import { orderRouter } from "./routes/order.routes";
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/product", ProductRouter);
 app.use("/api/v1/cart", cartRouter);
+app.use("/api/v1/order", orderRouter);
 
 // google callback
 app.get(

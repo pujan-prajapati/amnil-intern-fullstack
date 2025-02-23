@@ -1,9 +1,11 @@
 import {
   BaseEntity,
   Column,
+  CreateDateColumn,
   Entity,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { Cart } from "./cart.entity";
 import { Product } from "./product.entity";
@@ -16,7 +18,7 @@ export class CartItem extends BaseEntity {
   @ManyToOne(() => Cart, (cart) => cart.items, { onDelete: "CASCADE" })
   cart: Cart;
 
-  @ManyToOne(() => Product, (product) => product.id, {
+  @ManyToOne(() => Product, {
     onDelete: "CASCADE",
   })
   product: Product;
@@ -29,4 +31,10 @@ export class CartItem extends BaseEntity {
     default: 0,
   })
   price: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

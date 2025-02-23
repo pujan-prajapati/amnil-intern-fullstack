@@ -6,7 +6,7 @@ import { Product } from "../entity/product.entity";
 
 export const createProduct = asyncHandler(
   async (req: Request, res: Response) => {
-    const { name, description, price, category, quantity } = req.body;
+    const { name, description, price, category, quantity, tags } = req.body;
 
     const numericPrice = parseInt(price);
     const numberQuantity = parseInt(quantity);
@@ -25,7 +25,8 @@ export const createProduct = asyncHandler(
       numericPrice,
       imageLocalPaths,
       category,
-      numberQuantity
+      numberQuantity,
+      tags
     );
 
     res
@@ -67,6 +68,7 @@ export const getAllProducts = asyncHandler(
       maxPrice: req.query.maxPrice
         ? parseInt(req.query.maxPrice as string)
         : undefined,
+      tags: req.query.tags ? (req.query.tags as string).split(",") : undefined,
     };
 
     const { products, totalProducts, limit, page, totalPages } =

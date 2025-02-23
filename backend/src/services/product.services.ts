@@ -11,6 +11,7 @@ interface getAllProductsQuery {
   sortOrder?: "ASC" | "DESC";
   minPrice?: number;
   maxPrice?: number;
+  tags?: string | string[];
 }
 
 // create product service
@@ -20,7 +21,8 @@ export const createProduct = async (
   price: number,
   imageLocalPaths: string[],
   category: string,
-  quantity: number
+  quantity: number,
+  tags: string | string[]
 ) => {
   const imageUrls = await Promise.all(
     imageLocalPaths.map(async (path) => {
@@ -35,6 +37,10 @@ export const createProduct = async (
     })
   );
 
+  const tagArray = Array.isArray(tags)
+    ? tags
+    : tags.split(",").map((tag) => tag.trim());
+
   const product = Product.create({
     name,
     description,
@@ -42,6 +48,7 @@ export const createProduct = async (
     images: imageUrls,
     category,
     quantity,
+    tags: tagArray,
   });
   await product.save();
 
@@ -65,6 +72,7 @@ export const getAllProducts = async (query: getAllProductsQuery) => {
     sortOrder = "ASC",
     minPrice = 0,
     maxPrice,
+    tags,
   } = query;
 
   const cacheKey = `products:${JSON.stringify(query)}`;
@@ -81,6 +89,16 @@ export const getAllProducts = async (query: getAllProductsQuery) => {
       "(product.name ILIKE :search OR product.description ILIKE :search OR product.category ILIKE :search)",
       { search: `%${search}%` }
     );
+  }
+
+  // Filter by tags
+  if (tags) {
+    const tagArray = Array.isArray(tags)
+      ? tags
+      : tags.split(",").map((tag) => tag.trim());
+    queryBuilder.andWhere("product.tags && :tags", {
+      tags: tagArray,
+    });
   }
 
   // Filter by category

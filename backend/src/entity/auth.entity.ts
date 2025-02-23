@@ -5,9 +5,11 @@ import {
   BaseEntity,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
   OneToMany,
 } from "typeorm";
 import { Cart } from "./cart.entity";
+import { Order } from "./order.entity";
 
 enum Role {
   ADMIN = "admin",
@@ -56,8 +58,11 @@ export class Auth extends BaseEntity {
   })
   avatar: string;
 
-  @OneToMany(() => Cart, (cart) => cart.user, { cascade: true })
-  carts: Cart[];
+  @OneToOne(() => Cart, (cart) => cart.user, { cascade: true })
+  carts: Cart;
+
+  @OneToMany(() => Order, (order) => order.user)
+  orders: Order[];
 
   @Column({
     nullable: true,

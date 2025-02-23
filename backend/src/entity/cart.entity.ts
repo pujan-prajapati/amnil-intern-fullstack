@@ -3,8 +3,9 @@ import {
   Column,
   CreateDateColumn,
   Entity,
-  ManyToOne,
+  JoinColumn,
   OneToMany,
+  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from "typeorm";
@@ -19,7 +20,8 @@ export class Cart extends BaseEntity {
   @Column({ default: 0 })
   totalPrice: number;
 
-  @ManyToOne(() => Auth, (user) => user.carts, { onDelete: "CASCADE" })
+  @OneToOne(() => Auth, (user) => user.carts, { onDelete: "CASCADE" })
+  @JoinColumn()
   user: Auth;
 
   @OneToMany(() => CartItem, (cartItem) => cartItem.cart)

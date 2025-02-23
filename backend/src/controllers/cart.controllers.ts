@@ -34,3 +34,17 @@ export const getUserCart = asyncHandler(async (req: Request, res: Response) => {
 
   res.status(200).json(new ApiResponse(200, cart, "Cart fetched successfully"));
 });
+
+// delete cart item
+export const deleteCartItem = asyncHandler(
+  async (req: Request, res: Response) => {
+    const userId = req.user.id;
+    const { id } = req.params;
+
+    await cartServices.deleteCartItem(userId, id);
+
+    res
+      .status(200)
+      .json(new ApiResponse(200, null, "Cart item deleted successfully"));
+  }
+);

@@ -1,4 +1,4 @@
-import { Avatar, Badge, Button, message } from "antd";
+import { Avatar, Button, message } from "antd";
 import { Link, NavLink } from "react-router-dom";
 import { httpGet, httpPost } from "../../services/axios.service";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
@@ -58,7 +58,7 @@ export const Navbar = () => {
           <div className="flex gap-6 nav-items">
             <NavLink to="/">Home</NavLink>
             <NavLink to="/products">Products</NavLink>
-            <NavLink to="/contact">Contact</NavLink>
+            <NavLink to="/orders">Orders</NavLink>
             {token && role === "admin" && (
               <NavLink to="/admin">Dashboard</NavLink>
             )}
@@ -68,14 +68,7 @@ export const Navbar = () => {
             {token ? (
               <>
                 <Link to="/cart">
-                  <Badge
-                    count={1}
-                    size="small"
-                    className="mt-2"
-                    style={{ backgroundColor: "#52c41a" }}
-                  >
-                    <FaShoppingCart className="w-5 h-5" />
-                  </Badge>
+                  <FaShoppingCart className="w-5 h-5" />
                 </Link>
 
                 <Avatar

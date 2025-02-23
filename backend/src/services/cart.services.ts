@@ -77,3 +77,30 @@ export const getUserCart = async (id: string) => {
 
   return cart;
 };
+
+// delete cart service
+export const deleteCartItem = async (userId: string, id: string) => {
+  const user = await Auth.findOne({ where: { id: userId }, select: ["id"] });
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  const cart = await Cart.findOne({
+    where: { user: user },
+    relations: ["items", "items.product"],
+  });
+  if (!cart) {
+    throw new Error("Cart not found");
+  }
+
+  const cartItem = cart.items.find((item) => item.id === id);
+  if (!cartItem) {
+    throw new Error("Cart item not found");
+  }
+
+  cart.items = cart.items.filter((item) => item.id !== id);
+
+  await cart.save();
+
+  return cart;
+};
