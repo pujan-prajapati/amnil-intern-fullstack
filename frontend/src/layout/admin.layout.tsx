@@ -38,18 +38,6 @@ const menuItems = [
           </NavLink>
         ),
       },
-      {
-        key: "view-products",
-        label: (
-          <NavLink
-            to="/admin/view-products"
-            className={"admin-sidebar-subitem"}
-            end
-          >
-            View Products
-          </NavLink>
-        ),
-      },
     ],
   },
 ];

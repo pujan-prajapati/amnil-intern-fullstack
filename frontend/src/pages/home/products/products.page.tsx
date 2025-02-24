@@ -15,6 +15,7 @@ interface ProductProps {
   likes: number;
   views: number;
   reviews: number;
+  tags: string[];
 }
 
 export const ProductsPage = () => {
@@ -27,6 +28,7 @@ export const ProductsPage = () => {
   const [sortBy, setSortBy] = useState<string>("createdAt");
   const [sortOrder, setSortOrder] = useState<string>("DESC");
   const [category, setCategory] = useState<string>("");
+  const [tags, setTags] = useState<string>("");
 
   const fetchCategoris = async () => {
     try {
@@ -42,15 +44,17 @@ export const ProductsPage = () => {
     search: string,
     sortBy: string,
     sortOrder: string,
-    category: string
+    category: string,
+    tags: string = "" // Add a new parameter for tags
   ) => {
     try {
       const params = {
-        page: page,
+        page,
         search,
         sortBy,
         sortOrder,
         category,
+        tags, // Pass tags here
       };
 
       const response = await httpGet("/product", params);
@@ -64,9 +68,9 @@ export const ProductsPage = () => {
   };
 
   useEffect(() => {
-    fetchProducts(currentPage, searchTerm, sortBy, sortOrder, category);
+    fetchProducts(currentPage, searchTerm, sortBy, sortOrder, category, tags);
     fetchCategoris();
-  }, [currentPage, searchTerm, sortBy, sortOrder, category]);
+  }, [currentPage, searchTerm, sortBy, sortOrder, category, tags]);
 
   const handlePaginationChange = (page: number) => {
     setCurrentPage(page);
@@ -75,7 +79,7 @@ export const ProductsPage = () => {
   const handleSearch = () => {
     setSearchTerm(search);
     setCurrentPage(1);
-    fetchProducts(1, search, sortBy, sortOrder, category);
+    fetchProducts(1, search, sortBy, sortOrder, category, tags); // Pass tags to fetchProducts
   };
 
   const handleSortChange = ({ key }: { key: string }) => {
@@ -85,17 +89,14 @@ export const ProductsPage = () => {
     setCurrentPage(1);
   };
 
-  const handleFilterChange = ({ key }: { key: string }) => {
-    const [filterByValue, filterOrderValue] = key.split("_");
-    setSortBy(filterByValue);
-    setSortOrder(filterOrderValue);
-    setCurrentPage(1);
-  };
-
   const handleCategoryChange = ({ key }: { key: string }) => {
     setCategory(key);
     setCurrentPage(1);
-    fetchProducts(1, searchTerm, sortBy, sortOrder, key);
+    fetchProducts(1, searchTerm, sortBy, sortOrder, key, tags); // Reset tags when changing category
+  };
+
+  const handleTagChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTags(e.target.value); // Update the tags field
   };
 
   const categoryItems: MenuProps["items"] = [
@@ -176,51 +177,6 @@ export const ProductsPage = () => {
     },
   ];
 
-  const filterItems: MenuProps["items"] = [
-    {
-      label: (
-        <p
-          className={
-            sortBy === "likes" && sortOrder === "DESC"
-              ? "custom-selected-item"
-              : ""
-          }
-        >
-          Most Popular
-        </p>
-      ),
-      key: "likes_DESC",
-    },
-    {
-      label: (
-        <p
-          className={
-            sortBy === "views" && sortOrder === "DESC"
-              ? "custom-selected-item"
-              : ""
-          }
-        >
-          Most Views
-        </p>
-      ),
-      key: "views_DESC",
-    },
-    {
-      label: (
-        <p
-          className={
-            sortBy === "reviews" && sortOrder === "DESC"
-              ? "custom-selected-item"
-              : ""
-          }
-        >
-          Most Reviews
-        </p>
-      ),
-      key: "reviews_DESC",
-    },
-  ];
-
   return (
     <>
       <HomeWrapper>
@@ -247,10 +203,7 @@ export const ProductsPage = () => {
 
           <div className="flex gap-5">
             <Dropdown
-              menu={{
-                items: categoryItems,
-                onClick: handleCategoryChange,
-              }}
+              menu={{ items: categoryItems, onClick: handleCategoryChange }}
               className="cursor-pointer"
               trigger={["click"]}
             >
@@ -264,15 +217,18 @@ export const ProductsPage = () => {
             >
               <Button>Sort By</Button>
             </Dropdown>
-
-            <Dropdown
-              menu={{ items: filterItems, onClick: handleFilterChange }}
-              className="cursor-pointer"
-              trigger={["click"]}
-            >
-              <Button>Filter</Button>
-            </Dropdown>
           </div>
+        </section>
+
+        {/* Tag filter */}
+        <section className="my-5">
+          <Input
+            placeholder="Enter tags (comma separated)"
+            size="large"
+            value={tags}
+            onChange={handleTagChange}
+            onPressEnter={handleSearch}
+          />
         </section>
 
         {/* products */}
@@ -298,7 +254,7 @@ export const ProductsPage = () => {
                     {item.quantity}
                   </p>
                   <p>
-                    <span className="font-semibold">Lieks : </span>
+                    <span className="font-semibold">Likes : </span>
                     {item.likes}
                   </p>
                   <p>
@@ -309,6 +265,12 @@ export const ProductsPage = () => {
                     <span className="font-semibold">Reviews : </span>
                     {item.reviews}
                   </p>
+                  {item.tags && (
+                    <p>
+                      <span className="font-semibold">Tags : </span>
+                      {item.tags.join(", ")}
+                    </p>
+                  )}
                 </div>
               </div>
             </Link>

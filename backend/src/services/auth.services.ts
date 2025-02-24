@@ -5,6 +5,7 @@ import {
   generateRefreshToken,
 } from "../utils/generateToken";
 import { deleteFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary";
+import { sendMail } from "../utils/sendMail";
 
 // find user
 export const findUser = async (email: string) => {
@@ -53,13 +54,30 @@ export const registerUser = async (
 
 // login user
 export const loginUser = async (email: string, password: string) => {
+  const max_failed_attempts = 5;
+
   const user = await Auth.findOneBy({ email });
   if (!user) {
     throw new Error("invalid credentials");
   }
 
+  if (user.isLocked) {
+    throw new Error("User is locked. Please check your email");
+  }
+
   const isPasswordMatch = await bcryptjs.compare(password, user.password);
   if (!isPasswordMatch) {
+    user.failedLoginAttempts += 1;
+    if (user.failedLoginAttempts >= max_failed_attempts) {
+      user.isLocked = true;
+      await sendMail(
+        user.email,
+        "Account Locked",
+        "Your account has been locked due to multiple failed login attempts. Please reset your password to unlock your account.",
+        `<p>Your account has been locked due to multiple failed login attempts. Please reset your password to unlock your account.</p>`
+      );
+    }
+    await user.save();
     throw new Error("invalid credentials");
   }
 
@@ -210,6 +228,10 @@ export const resetPassword = async (
 
   const hashedPassword = await bcryptjs.hash(newPassword, 10);
   user.password = hashedPassword;
+
+  user.isLocked = false;
+  user.failedLoginAttempts = 0;
+
   await user.save();
 
   return user;

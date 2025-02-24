@@ -156,6 +156,10 @@ export const CreateProduct = () => {
               {fileList.length < 4 && "+ Upload"}
             </Upload>
           </Form.Item>
+
+          <Form.Item label="Tags" name="tags">
+            <Input placeholder="Enter tags separated by commas" />
+          </Form.Item>
         </div>
       </Form>
     </>

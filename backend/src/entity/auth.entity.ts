@@ -85,6 +85,12 @@ export class Auth extends BaseEntity {
   })
   otpExpiry: number;
 
+  @Column({ default: 0 })
+  failedLoginAttempts: number;
+
+  @Column({ default: false })
+  isLocked: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

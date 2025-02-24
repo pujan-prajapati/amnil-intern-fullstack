@@ -7,6 +7,7 @@ import * as passport from "passport";
 import * as morgan from "morgan";
 import "./config/passport.config";
 import { setupSwagger } from "./config/swagger.config";
+import { rateLimiter } from "./middleware/rateLimiter.middleware";
 
 dotenv.config();
 export const app = express();
@@ -33,6 +34,7 @@ app.use(
     },
   })
 );
+app.use(rateLimiter);
 
 app.use(passport.initialize());
 app.use(passport.session());
