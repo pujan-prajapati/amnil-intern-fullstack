@@ -46,12 +46,14 @@ import { generateAccessToken } from "./utils/generateToken";
 import { authRouter } from "./routes/auth.routes";
 import { ProductRouter } from "./routes/product.routes";
 import { cartRouter } from "./routes/cart.routes";
+import { reportRouter } from "./routes/report.routes";
 
 import { orderRouter } from "./routes/order.routes";
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/product", ProductRouter);
 app.use("/api/v1/cart", cartRouter);
 app.use("/api/v1/order", orderRouter);
+app.use("/api/v1/report", reportRouter);
 
 // google callback
 app.get(
