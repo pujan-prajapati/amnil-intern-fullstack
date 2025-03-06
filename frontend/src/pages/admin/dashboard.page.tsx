@@ -9,6 +9,9 @@ import {
   YAxis,
   Tooltip,
   CartesianGrid,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 import dayjs, { Dayjs } from "dayjs";
 import { httpGet } from "../../services/axios.service";
@@ -35,6 +38,18 @@ const columns = [
     render: (value: number) => `Rs. ${value}`,
   },
 ];
+
+interface TopSellingProduct {
+  product: {
+    name: string;
+  };
+  totalRevenue: number;
+}
+
+interface TopSearchedProduct {
+  name: string;
+  views: number;
+}
 
 export const Dashboard = () => {
   const [totalRevenue, setTotalRevenue] = useState(0);
@@ -106,6 +121,19 @@ export const Dashboard = () => {
     dayjs().startOf("month"),
     dayjs().endOf("month"),
   ]);
+
+  const topSellingProductsPieData = topSellingProducts.map(
+    (product: TopSellingProduct) => ({
+      name: product.product.name,
+      value: product.totalRevenue,
+    })
+  );
+  const topSearchedProductsPieData = topSearchedProducts.map(
+    (product: TopSearchedProduct) => ({
+      name: product.name,
+      value: product.views,
+    })
+  );
 
   const handleRangeChange = (dates: [Dayjs | null, Dayjs | null]) => {
     setDates(dates);
@@ -242,6 +270,32 @@ export const Dashboard = () => {
                   rowKey="product.id"
                   pagination={false}
                 />
+
+                <PieChart width={400} height={400} className="mt-6">
+                  <Tooltip
+                    formatter={(value, name) => [`Rs. ${value}`, name]}
+                  />
+                  <Pie
+                    data={topSellingProductsPieData}
+                    dataKey={"value"}
+                    nameKey={"name"}
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={150}
+                    fill="#8884d8"
+                    label
+                  >
+                    {topSellingProductsPieData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={`#${Math.floor(Math.random() * 16777215).toString(
+                          16
+                        )}`}
+                      />
+                    ))}
+                  </Pie>
+                </PieChart>
+
                 <h4 className="text-lg font-semibold mb-4 mt-6">
                   Top 10 Searched Products
                 </h4>
@@ -254,6 +308,31 @@ export const Dashboard = () => {
                   rowKey="id"
                   pagination={false}
                 />
+
+                <PieChart width={400} height={400} className="mt-6">
+                  <Tooltip
+                    formatter={(value, name) => [`Rs. ${value}`, name]}
+                  />
+                  <Pie
+                    data={topSearchedProductsPieData}
+                    dataKey="value"
+                    nameKey="name"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={150}
+                    fill="#82ca9d"
+                    label
+                  >
+                    {topSearchedProductsPieData.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={`#${Math.floor(Math.random() * 16777215).toString(
+                          16
+                        )}`}
+                      />
+                    ))}
+                  </Pie>
+                </PieChart>
               </>
             ),
           },
